@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>System Error</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ===== RESET ===== */
+*{margin:0;padding:0;box-sizing:border-box;font-family: 'Courier New', monospace;}
+html,body{
+    width:100%;
+    height:100%;
+    background:#05010a;
+    overflow:hidden;
+    color:#00ffcc;
+}
+
+/* ===== BACKGROUND GRID ===== */
+body::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(rgba(0,255,204,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,204,0.08) 1px, transparent 1px);
+    background-size:40px 40px;
+    z-index:0;
+}
+
+/* ===== CENTER BOX ===== */
+.container{
+    position:relative;
+    z-index:2;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+
+.box{
+    padding:40px 50px;
+    border:1px solid #00ffcc;
+    background:rgba(0,0,0,0.6);
+    box-shadow:0 0 20px #00ffcc55, inset 0 0 20px #00ffcc22;
+    animation:flicker 3s infinite;
+}
+
+/* ===== ERROR TEXT ===== */
+.glitch{
+    font-size:72px;
+    letter-spacing:4px;
+    position:relative;
+    color:#00ffcc;
+    text-shadow:
+        0 0 10px #00ffcc,
+        0 0 20px #00ffcc;
+}
+
+.glitch::before,
+.glitch::after{
+    content:attr(data-text);
+    position:absolute;
+    left:0;
+    width:100%;
+    overflow:hidden;
+    background:transparent;
+}
+
+.glitch::before{
+    top:-2px;
+    color:#ff0055;
+    animation:glitchTop 2s infinite linear;
+}
+
+.glitch::after{
+    top:2px;
+    color:#00aaff;
+    animation:glitchBottom 1.5s infinite linear;
+}
+
+.message{
+    margin-top:15px;
+    font-size:16px;
+    opacity:0.85;
+}
+
+/* ===== BUTTON ===== */
+.btn{
+    margin-top:25px;
+    display:inline-block;
+    padding:10px 25px;
+    border:1px solid #00ffcc;
+    color:#00ffcc;
+    text-decoration:none;
+    transition:0.3s;
+}
+.btn:hover{
+    background:#00ffcc;
+    color:#000;
+    box-shadow:0 0 15px #00ffcc;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes glitchTop{
+    0%{clip-path:inset(0 0 80% 0);}
+    50%{clip-path:inset(0 0 20% 0);}
+    100%{clip-path:inset(0 0 80% 0);}
+}
+@keyframes glitchBottom{
+    0%{clip-path:inset(80% 0 0 0);}
+    50%{clip-path:inset(20% 0 0 0);}
+    100%{clip-path:inset(80% 0 0 0);}
+}
+@keyframes flicker{
+    0%,100%{opacity:1;}
+    50%{opacity:0.9;}
+    70%{opacity:0.95;}
+}
+
+/* ===== MATRIX CANVAS ===== */
+canvas{
+    position:absolute;
+    inset:0;
+    z-index:1;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="container">
+    <div class="box">
+        <div class="glitch" data-text="ERROR 404">ERROR 404</div>
+        <div class="message">
+            SYSTEM FAILURE<br>
+            Access Denied or Page Not Found
+        </div>
+        <a href="/" class="btn">RETURN TO BASE</a>
+    </div>
+</div>
+
+<script>
+/* ===== MATRIX EFFECT ===== */
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&@";
+const fontSize = 14;
+let columns = canvas.width / fontSize;
+let drops = Array.from({length: columns}).fill(1);
+
+function draw(){
+    ctx.fillStyle = "rgba(0,0,0,0.05)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "#00ffcc";
+    ctx.font = fontSize + "px monospace";
+
+    for(let i=0;i<drops.length;i++){
+        const text = letters[Math.floor(Math.random()*letters.length)];
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+
+        if(drops[i]*fontSize > canvas.height && Math.random() > 0.975){
+            drops[i] = 0;
+        }
+        drops[i]++;
+    }
+}
+setInterval(draw, 50);
+</script>
+
+</body>
+  </html>
